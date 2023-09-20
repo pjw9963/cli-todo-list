@@ -33,6 +33,30 @@ public class ItemManager
         saveToFile();
     }
 
+    public void UpdateItem(Item item)
+    {
+        var target = items.FirstOrDefault(x => x.id == item.id);
+        if (target != null)
+        {
+            target = item;
+        }
+        saveToFile();
+    }
+
+    public Item GetItem(Guid guid)
+    {
+        var result = items.FirstOrDefault(x => x.id == guid);
+        if (result == null) throw new ArgumentException("The provided guid did not match any items");
+        return result;
+    }
+
+    public Item GetItem(string shortId)
+    {
+        var result = items.FirstOrDefault(x => x.id.ToString().StartsWith(shortId));
+        if (result == null) throw new ArgumentException("The provided short-guid did not match any items");
+        return result;
+    }
+
     public System.Collections.ObjectModel.ReadOnlyCollection<Item> GetItems()
     {
         return items.AsReadOnly();

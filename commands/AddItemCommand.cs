@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Productivity;
 using Spectre.Console.Cli;
 
@@ -12,7 +13,7 @@ public class AddItemCommand : Command<AddItemCommand.Settings>
         public Priority Priority { get; set; }
     }
 
-    public override int Execute(CommandContext context, Settings settings)
+    public override int Execute([NotNull] CommandContext context, [NotNull] Settings settings)
     {
         var item = new Item(settings.Title, settings.Priority);
         var itemManager = ItemManager.Instance;

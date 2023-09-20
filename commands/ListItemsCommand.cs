@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Productivity;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -7,7 +8,7 @@ public class ListItemsCommand : Command<ListItemsCommand.Settings>
     public class Settings : CommandSettings
     { }
 
-    public override int Execute(CommandContext context, Settings settings)
+    public override int Execute([NotNull] CommandContext context, [NotNull] Settings settings)
     {
         var itemManager = ItemManager.Instance;
         var items = itemManager.GetItems();
@@ -24,7 +25,18 @@ public class ListItemsCommand : Command<ListItemsCommand.Settings>
         foreach (Item item in items)
         {
             var shortId = item.id.ToString().Split('-')[0];
-            table.AddRow($"[green]{shortId}[/]", $"[blue]{item.title}[/]", $"[blue]{item.priority}[/]", $"[blue]{item.status}[/]");
+
+            var statusColor = "blue";
+            if (item.status == Productivity.Status.InProgress) statusColor = "green";
+            if (item.status == Productivity.Status.Aborted) statusColor = "red";
+            if (item.status == Productivity.Status.Done) statusColor = "grey";
+
+            var priorityColor = "blue";
+            if (item.priority == Priority.ImportantForHealth) priorityColor = "red";
+            if (item.priority == Priority.Maintenance) priorityColor = "yellow";
+            if (item.priority == Priority.WouldBeCool) priorityColor = "purple";
+
+            table.AddRow($"[grey]{shortId}[/]", $"[blue]{item.title}[/]", $"[{priorityColor}]{item.priority}[/]", $"[{statusColor}]{item.status}[/]");
         }
 
         // Render the table to the console
