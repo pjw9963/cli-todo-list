@@ -25,6 +25,7 @@ public enum Status
 
 public class Item
 {
+    public Guid id { get; init; }
     public string title { get; set; }
     public Priority priority { get; set; }
     public Schedule schedule { get; set; } = Schedule.OneTime;
@@ -35,6 +36,7 @@ public class Item
 
     public Item(string title, Priority priority)
     {
+        this.id = Guid.NewGuid();
         this.title = title;
         this.priority = priority;
     }

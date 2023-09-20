@@ -15,6 +15,7 @@ public class ListItemsCommand : Command<ListItemsCommand.Settings>
         var table = new Table();
 
         // Add some columns
+        table.AddColumn("Id");
         table.AddColumn("Title");
         table.AddColumn("Priority");
         table.AddColumn("Status");
@@ -22,7 +23,8 @@ public class ListItemsCommand : Command<ListItemsCommand.Settings>
         // Add some rows
         foreach (Item item in items)
         {
-            table.AddRow($"[blue]{item.title}[/]", $"[blue]{item.priority}[/]", $"[blue]{item.status}[/]");
+            var shortId = item.id.ToString().Split('-')[0];
+            table.AddRow($"[green]{shortId}[/]", $"[blue]{item.title}[/]", $"[blue]{item.priority}[/]", $"[blue]{item.status}[/]");
         }
 
         // Render the table to the console
