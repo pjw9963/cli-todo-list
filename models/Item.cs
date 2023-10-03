@@ -25,19 +25,19 @@ public enum Status
 
 public class Item
 {
-    public Guid id { get; init; }
+    public Guid id { get; init; } = Guid.NewGuid();
     public string title { get; set; }
     public Priority priority { get; set; }
     public Schedule schedule { get; set; } = Schedule.OneTime;
     public string? description { get; set; }
-    public Status status { get; set; } = Status.Incomplete;
     public TimeSpan? EstimatedDuration { get; set; }
     public TimeSpan? ActualDuration { get; set; }
+    public List<ItemStatusUpdate> Updates { get; set; }
+}
 
-    public Item(string title, Priority priority)
-    {
-        this.id = Guid.NewGuid();
-        this.title = title;
-        this.priority = priority;
-    }
+public class ItemStatusUpdate
+{
+    public Guid id { get; set; } = Guid.NewGuid();
+    public Status status { get; set; }
+    public DateTime UpdateTimestamp { get; set; }
 }

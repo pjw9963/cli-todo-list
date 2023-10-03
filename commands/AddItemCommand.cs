@@ -15,7 +15,11 @@ public class AddItemCommand : Command<AddItemCommand.Settings>
 
     public override int Execute([NotNull] CommandContext context, [NotNull] Settings settings)
     {
-        var item = new Item(settings.Title, settings.Priority);
+        var item = new Item()
+        {
+            title = settings.Title,
+            priority = settings.Priority,
+        };
         var itemManager = ItemManager.Instance;
         itemManager.AddItem(item);
         return 0;

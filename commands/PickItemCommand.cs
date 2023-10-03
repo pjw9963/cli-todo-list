@@ -17,8 +17,8 @@ public class PickItemCommand : Command<PickItemCommand.Settings>
         // Ask for the user's favorite fruit
 
         var choices = itemManager.GetItems()
-        .Where(x => x.status != settings.Status && x.status != Productivity.Status.Done)
-        .Select(x => $"{x.id.ToString().Split('-')[0]} - {x.title} - {x.status}");
+        //.Where(x => x.status != settings.Status && x.status != Productivity.Status.Done)
+        .Select(x => $"{x.id.ToString().Split('-')[0]} - {x.title} - WIP");
 
         var pickedItem = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
@@ -28,7 +28,7 @@ public class PickItemCommand : Command<PickItemCommand.Settings>
                 .AddChoices(choices));
 
         Item item = itemManager.GetItem(pickedItem.Split(' ')[0]);
-        item.status = settings.Status;
+        //item.status = settings.Status;
         itemManager.UpdateItem(item);
 
         AnsiConsole.WriteLine($"Item {item.id} has been updated to {settings.Status}");

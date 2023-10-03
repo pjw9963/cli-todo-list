@@ -27,16 +27,16 @@ public class ListItemsCommand : Command<ListItemsCommand.Settings>
             var shortId = item.id.ToString().Split('-')[0];
 
             var statusColor = "blue";
-            if (item.status == Productivity.Status.InProgress) statusColor = "green";
-            if (item.status == Productivity.Status.Aborted) statusColor = "red";
-            if (item.status == Productivity.Status.Done) statusColor = "grey";
+            // if (item.status == Productivity.Status.InProgress) statusColor = "green";
+            // if (item.status == Productivity.Status.Aborted) statusColor = "red";
+            // if (item.status == Productivity.Status.Done) statusColor = "grey";
 
             var priorityColor = "blue";
             if (item.priority == Priority.ImportantForHealth) priorityColor = "red";
             if (item.priority == Priority.Maintenance) priorityColor = "yellow";
             if (item.priority == Priority.WouldBeCool) priorityColor = "purple";
 
-            table.AddRow($"[grey]{shortId}[/]", $"[blue]{item.title}[/]", $"[{priorityColor}]{item.priority}[/]", $"[{statusColor}]{item.status}[/]");
+            table.AddRow($"[grey]{shortId}[/]", $"[blue]{item.title}[/]", $"[{priorityColor}]{item.priority}[/]", $"[{statusColor}]WIP[/]");
         }
 
         // Render the table to the console
