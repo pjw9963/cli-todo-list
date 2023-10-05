@@ -4,6 +4,13 @@ using Spectre.Console.Cli;
 
 public class AddItemCommand : Command<AddItemCommand.Settings>
 {
+    private readonly ItemStore _itemStore;
+
+    public AddItemCommand(ItemStore itemStore)
+    {
+        _itemStore = itemStore;
+    }
+
     public class Settings : CommandSettings
     {
         [CommandArgument(0, "<title>")]
@@ -20,8 +27,8 @@ public class AddItemCommand : Command<AddItemCommand.Settings>
             title = settings.Title,
             priority = settings.Priority,
         };
-        var itemManager = ItemManager.Instance;
-        itemManager.AddItem(item);
+        _itemStore.Items.Add(item);
+        _itemStore.SaveChanges();
         return 0;
     }
 

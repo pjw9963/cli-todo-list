@@ -39,5 +39,5 @@ public class ItemStatusUpdate
 {
     public Guid id { get; set; } = Guid.NewGuid();
     public Status status { get; set; }
-    public DateTime UpdateTimestamp { get; set; }
+    public DateTime UpdateTimestamp { get; set; } = DateTime.Now;
 }

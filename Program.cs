@@ -4,7 +4,13 @@ using Microsoft.Extensions.Hosting;
 using Spectre.Console.Cli;
 
 var registrations = new ServiceCollection(); // I think this is dumb
-// registrations.AddSingleton<IGreeter, HelloWorldGreeter>();
+
+registrations.AddSingleton(new AppConfig
+{
+    ConnectionString = "connection-string"
+});
+
+registrations.AddDbContext<ItemStore>();
 
 // Create a type registrar and register any dependencies.
 // A type registrar is an adapter for a DI framework.

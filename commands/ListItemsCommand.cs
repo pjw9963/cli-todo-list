@@ -5,13 +5,16 @@ using Spectre.Console.Cli;
 
 public class ListItemsCommand : Command<ListItemsCommand.Settings>
 {
+    private readonly ItemStore _itemStore;
+    public ListItemsCommand(ItemStore itemStore) {
+        _itemStore = itemStore;
+    }
     public class Settings : CommandSettings
     { }
 
     public override int Execute([NotNull] CommandContext context, [NotNull] Settings settings)
     {
-        var itemManager = ItemManager.Instance;
-        var items = itemManager.GetItems();
+        var items = _itemStore.Items.ToList();
 
         var table = new Table();
 
