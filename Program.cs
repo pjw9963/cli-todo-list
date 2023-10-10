@@ -23,6 +23,7 @@ app.Configure(config =>
     config.AddCommand<AddItemCommand>("add-item");
     config.AddCommand<ListItemsCommand>("list-items");
     config.AddCommand<PickItemCommand>("pick-item");
+    config.AddCommand<ItemDetailsCommand>("item-details");
 });
 
 app.Run(args);

@@ -6,15 +6,32 @@ using Spectre.Console.Cli;
 public class ListItemsCommand : Command<ListItemsCommand.Settings>
 {
     private readonly ItemStore _itemStore;
-    public ListItemsCommand(ItemStore itemStore) {
+    struct listResult
+    {
+        public Item Item;
+        public Productivity.Status Status;
+    }
+
+    public ListItemsCommand(ItemStore itemStore)
+    {
         _itemStore = itemStore;
     }
+
     public class Settings : CommandSettings
     { }
 
     public override int Execute([NotNull] CommandContext context, [NotNull] Settings settings)
     {
-        var items = _itemStore.Items.ToList();
+
+
+        var items = _itemStore.Items.Select(i => new listResult
+        {
+            Item = i,
+            Status = i.Updates
+                .OrderByDescending(u => u.UpdateTimestamp)
+                .Select(p => p.status)
+                .FirstOrDefault()                
+        });
 
         var table = new Table();
 
@@ -25,8 +42,9 @@ public class ListItemsCommand : Command<ListItemsCommand.Settings>
         table.AddColumn("Status");
 
         // Add some rows
-        foreach (Item item in items)
+        foreach (listResult lr in items)
         {
+            var item = lr.Item;
             var shortId = item.id.ToString().Split('-')[0];
 
             var statusColor = "blue";
@@ -39,7 +57,7 @@ public class ListItemsCommand : Command<ListItemsCommand.Settings>
             if (item.priority == Priority.Maintenance) priorityColor = "yellow";
             if (item.priority == Priority.WouldBeCool) priorityColor = "purple";
 
-            table.AddRow($"[grey]{shortId}[/]", $"[blue]{item.title}[/]", $"[{priorityColor}]{item.priority}[/]", $"[{statusColor}]WIP[/]");
+            table.AddRow($"[grey]{shortId}[/]", $"[blue]{item.title}[/]", $"[{priorityColor}]{item.priority}[/]", $"[{statusColor}]{lr.Status}[/]");
         }
 
         // Render the table to the console

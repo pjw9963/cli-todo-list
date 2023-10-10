@@ -21,7 +21,7 @@ public class InitDatabaseCommand : Command<InitDatabaseCommand.Settings>
                     description = "This task is created for testing reasons.",
                     priority = Priority.ImportantForHealth,
                     schedule = Schedule.OneTime,
-                    Updates = new List<ItemStatusUpdate>()
+                    Updates = new List<ItemStatusUpdate>(),
                 },
                 new Item
                 {
@@ -29,12 +29,7 @@ public class InitDatabaseCommand : Command<InitDatabaseCommand.Settings>
                     description = "This is another task created for testing purposes.",
                     priority = Priority.Maintenance,
                     schedule = Schedule.Daily,
-                    Updates = new List<ItemStatusUpdate>()
-                    {
-                        new ItemStatusUpdate { status = Productivity.Status.Done, UpdateTimestamp = DateTime.Now.AddDays(-3) },
-                        new ItemStatusUpdate { status = Productivity.Status.InProgress, UpdateTimestamp = DateTime.Now.AddMinutes(-10) },
-                        new ItemStatusUpdate { status = Productivity.Status.Done, UpdateTimestamp = DateTime.Now },
-                    }
+                    Updates = new List<ItemStatusUpdate>(),
                 },
                 new Item
                 {
@@ -42,13 +37,22 @@ public class InitDatabaseCommand : Command<InitDatabaseCommand.Settings>
                     description = "This is yet another task created for testing purposes.",
                     priority = Priority.Maintenance,
                     schedule = Schedule.Weekly,
-                    Updates = new List<ItemStatusUpdate>()
-                    {
-                        new ItemStatusUpdate { status = Productivity.Status.Done, UpdateTimestamp = DateTime.Now.AddDays(-8) },
-                        new ItemStatusUpdate { status = Productivity.Status.Done, UpdateTimestamp = DateTime.Now },
-                    }
+                    Updates = new List<ItemStatusUpdate>(),
                 }
             };
+
+            items[1].Updates.AddRange(new List<ItemStatusUpdate>()
+            {
+                new ItemStatusUpdate { status = Productivity.Status.Done, UpdateTimestamp = DateTime.Now.AddDays(-3) },
+                new ItemStatusUpdate { status = Productivity.Status.InProgress, UpdateTimestamp = DateTime.Now.AddMinutes(-10) },
+                new ItemStatusUpdate { status = Productivity.Status.Done, UpdateTimestamp = DateTime.Now },
+            });
+
+            items[2].Updates.AddRange(new List<ItemStatusUpdate>()
+            {
+                new ItemStatusUpdate { status = Productivity.Status.Done, UpdateTimestamp = DateTime.Now.AddDays(-8) },
+                new ItemStatusUpdate { status = Productivity.Status.Done, UpdateTimestamp = DateTime.Now },
+            });
 
             dbContext.Items.AddRange(items);
             dbContext.SaveChanges();

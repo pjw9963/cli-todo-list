@@ -1,3 +1,6 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Productivity;
 
 public enum Priority
@@ -25,6 +28,11 @@ public enum Status
 
 public class Item
 {
+    public Item ()
+    {
+        Updates = new List<ItemStatusUpdate>();
+    }
+
     public Guid id { get; init; } = Guid.NewGuid();
     public string title { get; set; }
     public Priority priority { get; set; }
@@ -37,7 +45,10 @@ public class Item
 
 public class ItemStatusUpdate
 {
-    public Guid id { get; set; } = Guid.NewGuid();
+    [Key]
+    public Guid id { get; set; }
+    [ForeignKey("itemId")]
+    public Guid itemId { get; set; }
     public Status status { get; set; }
     public DateTime UpdateTimestamp { get; set; } = DateTime.Now;
 }

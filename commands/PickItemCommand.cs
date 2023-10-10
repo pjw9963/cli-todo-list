@@ -25,11 +25,11 @@ public class PickItemCommand : Command<PickItemCommand.Settings>
             Item = item,
             LatestStatusUpdate = item.Updates
                     .OrderByDescending(update => update.UpdateTimestamp)
+                    .Select(update => update.status)
                     .FirstOrDefault()
         })
-        .Where(x => x.LatestStatusUpdate != null && x.LatestStatusUpdate.status != Productivity.Status.Done)
-        .Select(x => x.Item)
-        .Select(x => $"{x.id.ToString()} - {x.title} - WIP")
+        .Where(x => x.LatestStatusUpdate != settings.Status)
+        .Select(x => $"{x.Item.id.ToString()} - {x.Item.title} - {x.LatestStatusUpdate}")
         .ToList();
 
         var pickedItemId = AnsiConsole.Prompt(
@@ -41,6 +41,9 @@ public class PickItemCommand : Command<PickItemCommand.Settings>
 
         //item.status = settings.Status;
         var item = _itemStore.Items.FirstOrDefault(i => i.id.ToString() == pickedItemId);
+
+        if (item == null) return 1;
+
         item.Updates.Add(new ItemStatusUpdate
         {
             status = settings.Status
