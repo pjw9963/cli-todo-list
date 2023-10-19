@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using Productivity;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -19,7 +20,7 @@ public class ListItemsCommand : Command<ListItemsCommand.Settings>
     }
 
     public class Settings : CommandSettings
-    {        
+    {
         [CommandOption("-s|--status")]
         [Description("List items only with the provided status")]
         public Productivity.Status? Status { get; set; }
@@ -41,16 +42,18 @@ public class ListItemsCommand : Command<ListItemsCommand.Settings>
             Update = i.Updates
                     .OrderByDescending(u => u.UpdateTimestamp)
                     .First()
-        });        
+        });
 
+        // filter status by status param, as well as it is not null/incomplete
         if (settings.Status != null && settings.Status != Productivity.Status.Incomplete)
         {
             itemQuery = itemQuery.Where(lr => lr.Update != null && lr.Update.status == settings.Status);
         }
 
-        if (settings.Status == null || settings.Status == Productivity.Status.Incomplete)
+        // when status param is null/incomplete
+        if (settings.Status != null && settings.Status == Productivity.Status.Incomplete)
         {
-            itemQuery = itemQuery.Where(lr => lr.Update != null || (lr.Update != null && lr.Update.status == Productivity.Status.Incomplete));
+            itemQuery = itemQuery.Where(lr => lr.Update == null || (lr.Update != null && lr.Update.status == Productivity.Status.Incomplete));
         }
 
         if (settings.Timeline != null)
@@ -75,6 +78,38 @@ public class ListItemsCommand : Command<ListItemsCommand.Settings>
             var item = lr.Item;
             var status = lr.Update?.status;
             var shortId = item.id.ToString().Split('-')[0];
+
+            // check if status is valid with schedule, if not completed within timeline set to incomplete
+            if (lr.Update != null)
+            {
+                switch (item.schedule)
+                {
+                    case Schedule.Daily:
+                        bool istoday = lr.Update.UpdateTimestamp.Date == DateTime.Today;
+                        if (!istoday) status = Productivity.Status.Incomplete;
+                        break;
+                    case Schedule.Weekly:
+                        CultureInfo cultureInfo = CultureInfo.CurrentCulture;
+                        System.Globalization.Calendar calendar = cultureInfo.Calendar;
+                        CalendarWeekRule calendarWeekRule = cultureInfo.DateTimeFormat.CalendarWeekRule;
+                        DayOfWeek firstDayOfWeek = cultureInfo.DateTimeFormat.FirstDayOfWeek;
+
+                        int timestampWeekOfYear = calendar.GetWeekOfYear(lr.Update.UpdateTimestamp, calendarWeekRule, firstDayOfWeek);
+                        int currentWeekOfYear = calendar.GetWeekOfYear(DateTime.Now, calendarWeekRule, firstDayOfWeek);
+
+                        bool isThisWeek = lr.Update.UpdateTimestamp.Year == DateTime.Now.Year && timestampWeekOfYear == currentWeekOfYear;
+                        if (!isThisWeek) status = Productivity.Status.Incomplete;
+                        break;
+                    case Schedule.Monthly:
+                        bool isThisMonth = lr.Update.UpdateTimestamp.Year == DateTime.Now.Year && lr.Update.UpdateTimestamp.Month == DateTime.Now.Month;
+                        if (!isThisMonth) status = Productivity.Status.Incomplete;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            if (status == null) status = Productivity.Status.Incomplete;
 
             var statusColor = "blue";
             if (status == Productivity.Status.InProgress) statusColor = "green";
